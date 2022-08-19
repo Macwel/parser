@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    networks:
+      - global
+    image: mysql:8.0.30-oracle
+    ports:
+      - '3306:3306'
+    volumes:
+      - global:/data/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'bank'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'admin123'
+  adminer:
+    networks:
+      - global
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  global:
+    driver: local
+
+networks:
+  global:
