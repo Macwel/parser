@@ -5,9 +5,12 @@ import iconv from 'iconv-lite';
 import path from 'path';
 import * as xmljs from 'xml-js';
 import type { ElementCompact } from 'xml-js';
+import { IC } from './interfaces';
+
 export default class App {
   #lastName = '';
   #path = path.resolve(__dirname, '../data/');
+  #arr = [];
 
   constructor() {
     this.#boot();
@@ -49,10 +52,38 @@ export default class App {
     return x;
   }
 
+  async parser(item: IC): Promise<boolean> {
+    if (Array.isArray(item?.Accounts)) {
+      item.Accounts.forEach((acc) => {
+        this.#arr.push({
+          bic: item.attributes.BIC,
+          name: item.ParticipantInfo.attributes.NameP,
+          corrAccount: acc.attributes.Account,
+        });
+      });
+      return true;
+    } else if (item?.Accounts) {
+      this.#arr.push({
+        bic: item.attributes.BIC,
+        name: item.ParticipantInfo.attributes.NameP,
+        corrAccount: item.Accounts.attributes.Account,
+      });
+      return true;
+    }
+  }
+
   async #boot(): Promise<void> {
     console.log(new Date(), '[App]: Start');
     await this.extractor();
     await this.decoder();
+    const jsonObj = await this.parseXmlToJSON();
+
+    console.log(new Date(), '[Main-Parser]: Start');
+    await Promise.all(
+      jsonObj['ED807'].BICDirectoryEntry.map(
+        async (item: IC) => await this.parser(item),
+      ),
+    );
 
     console.log(new Date(), '[App]: Finish App');
   }
