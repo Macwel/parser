@@ -6,6 +6,9 @@ import path from 'path';
 import * as xmljs from 'xml-js';
 import type { ElementCompact } from 'xml-js';
 import { IC } from './interfaces';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient({});
 
 export default class App {
   #lastName = '';
@@ -85,7 +88,9 @@ export default class App {
       ),
     );
     console.log(new Date(), '[Main-Parser]: Finish parser');
-
+    console.log(new Date(), '[DB]: Start push data to db');
+    await prisma.account.createMany({ data: [...this.#arr] });
+    console.log(new Date(), '[DB]: Finish push data to db');
     console.log(new Date(), '[App]: Finish App');
   }
 }
