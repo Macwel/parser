@@ -12,7 +12,7 @@ export default class App {
     this.#boot();
   }
 
-  async extractor() {
+  async extractor(): Promise<void> {
     console.log(new Date(), '[Extractor]: Start');
     const res = await fetcher(process.env.PARSE_URL);
     if (res.status === 200) {
@@ -35,7 +35,7 @@ export default class App {
     console.log(new Date(), '[Decoder]: Finish decoder');
   }
 
-  async #boot() {
+  async #boot(): Promise<void> {
     console.log(new Date(), '[App]: Start');
     await this.extractor();
     await this.decoder();
