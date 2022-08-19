@@ -84,6 +84,7 @@ export default class App {
         async (item: IC) => await this.parser(item),
       ),
     );
+    console.log(new Date(), '[Main-Parser]: Finish parser');
 
     console.log(new Date(), '[App]: Finish App');
   }
