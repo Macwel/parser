@@ -3,7 +3,8 @@ import AdmZip from 'adm-zip';
 import * as fs from 'fs';
 import iconv from 'iconv-lite';
 import path from 'path';
-
+import * as xmljs from 'xml-js';
+import type { ElementCompact } from 'xml-js';
 export default class App {
   #lastName = '';
   #path = path.resolve(__dirname, '../data/');
@@ -33,6 +34,19 @@ export default class App {
       .pipe(iconv.encodeStream('UTF-16'))
       .pipe(fs.createWriteStream(`${this.#path}/decode_${this.#lastName}`));
     console.log(new Date(), '[Decoder]: Finish decoder');
+  }
+
+  async parseXmlToJSON(): Promise<ElementCompact> {
+    console.log(new Date(), '[parseXmlToJSON]: Start');
+    const file = fs.readFileSync(`${this.#path}/${this.#lastName}`); // read file, response is buffer
+    const content = await iconv.decode(file, 'win1251'); // decode buffer to win1251
+    const x = xmljs.xml2js(content, {
+      compact: true,
+      ignoreDoctype: true,
+      attributesKey: 'attributes',
+    }); // convert xml to json
+    console.log(new Date(), '[parseXmlToJSON]: Finish');
+    return x;
   }
 
   async #boot(): Promise<void> {
