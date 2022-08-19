@@ -4,7 +4,7 @@
   "description": "Parser",
   "scripts": {
     "prisma:deploy": "env-cmd --file .env prisma migrate deploy",
-    "db:up": "docker compose up -d db && sleep 7 && yarn prisma:deploy",
+    "db:up": "docker compose up -d db && sleep 10 && yarn prisma:deploy",
     "start": "env-cmd --file .env ts-node-dev ./src/server.ts"
   },
   "license": "ISC",
